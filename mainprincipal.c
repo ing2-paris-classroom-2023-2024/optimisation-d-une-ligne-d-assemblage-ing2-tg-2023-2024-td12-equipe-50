@@ -203,12 +203,6 @@ t_Graphe * lire_graphe(char * nomFichier,int conx)
         fscanf(fptr2, "%d%d%c%d", &sommet, &temps, &point, &tempsbis);
         graphe->pSommet[i]->tempsExecutionSeconde = temps;
         graphe->pSommet[i]->tempsExecutionCentiSeconde = tempsbis;
-        if(graphe->pSommet[i]->tempsExecutionCentiSeconde < 10){
-            printf("%d pour %d.0%d\n", i+1, graphe->pSommet[i]->tempsExecutionSeconde, graphe->pSommet[i]->tempsExecutionCentiSeconde);
-        }
-        else {
-            printf("%d pour %d.%d\n", i+1, graphe->pSommet[i]->tempsExecutionSeconde, graphe->pSommet[i]->tempsExecutionCentiSeconde);
-        }
     }
     fclose(fptr2);
     for(int i=0; i<graphe->ordre; i++){
@@ -459,7 +453,6 @@ void tempsDeCycle(t_Graphe*graphe){
         else{
             tmp[i]=100+graphe->pSommet[i]->tempsExecutionCentiSeconde;
         }
-        printf("%d ", tmp[i]);
     }
     printf("\n");
     for(int i=0; i<graphe->ordre;i++){

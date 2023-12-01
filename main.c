@@ -42,14 +42,6 @@ int main()
     }
     recherche_connexe(g2);
 
-    for(int j=0; j<g2->ordre; j++){
-        if(g2->pSommet[j]->marquageFauxSommet==0){
-            j++;
-        }
-        printf("%d  ",g2->pSommet[j]->sommetOrdre);
-    }
-    printf("\n");
-
     tempsDeCycle(g2);
 
     return 0;
