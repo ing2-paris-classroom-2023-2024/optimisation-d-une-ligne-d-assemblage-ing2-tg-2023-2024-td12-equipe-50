@@ -4,45 +4,52 @@
 
 #include "Graphe.h"
 
+
 int main()
 {
-    t_Graphe * g, *g2;
-    int first,i;
-    char nom_fichier[50];
+    struct Sommet operations[100];
+    int nmbOp = fichierTexte(operations);
 
-    printf("entrer le nom du fichier du graphe:");
-    gets(nom_fichier);
-    g = lire_graphe(nom_fichier,0);
+    float tmpC= getTempscycle();
 
+    printf("%d operations recupere\n\n",nmbOp);
 
-    /// afficher le graphe
-    graphe_afficher(g);
-
-    /*Reinitialisation */
-    // ordre +2 pour correction bug CreerArete
-    for(i=0;i<g->ordre;i++)
+    while(1)
     {
-        if(g->pSommet[i]->marquageFauxSommet==0){
-            i++;
+
+
+
+        printf("\n\n __  __ ______ _   _ _    _ \n");
+        printf("|  \\/  |  ____| \\ | | |  | |\n");
+        printf("| \\  / | |__  |  \\| | |  | |\n");
+        printf("| |\\/| |  __| | . ` | |  | |\n");
+        printf("| |  | | |____| |\\  | |__| |\n");
+        printf("|_|  |_|______|_| \\_|\\____/\n\n");
+
+        printf("1- Donnees des fichier texte\n");
+        printf("2- Calcules des sations\n");
+        printf("3- Quitter\n");
+
+        int choix;
+        scanf("%d",&choix);
+
+        if(choix == 1)
+        {
+            data(operations ,  nmbOp);
         }
-        g->pSommet[i]->couleur=i;
+
+        if(choix == 2)
+        {
+            calculeDesStations(operations ,  nmbOp,tmpC);
+        }
+
+        if(choix == 3)
+        {
+            return 0;
+        }
+
     }
 
-    // Recherche composantes connexes
-    printf("\nListe composantes connexes\n");
-
-    // reconstruction du graphe si jamais oriente
-    g2 = lire_graphe(nom_fichier,1);
-
-    /*Reinitialisation */
-    // ordre +2 pour correction bug CreerArete
-    for(i=0;i<g2->ordre;i++)
-    {
-        g2->pSommet[i]->couleur='B';
-    }
-    recherche_connexe(g2);
-
-    tempsDeCycle(g2);
 
     return 0;
 }

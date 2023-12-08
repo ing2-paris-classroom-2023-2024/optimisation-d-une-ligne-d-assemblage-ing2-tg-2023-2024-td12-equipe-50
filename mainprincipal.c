@@ -1,6 +1,3 @@
-//
-// Created by cleme on 01/12/2023.
-//
 #include "Graphe.h"
 
 //affichage des successeurs du sommet num
@@ -16,7 +13,7 @@ void afficherSuccesseurs(pSommet * sommet, int numero, int numerobis,int valeur)
     }
 }
 
-// Ajouter l'arête entre les sommets s1 et s2 du graphe
+// A8T5jouter l'arête entre les sommets s1 et s2 du graphe
 pSommet* CreerArete(pSommet* sommet,int s1,int s2,int decallage)
 {
 
@@ -203,6 +200,12 @@ t_Graphe * lire_graphe(char * nomFichier,int conx)
         fscanf(fptr2, "%d%d%c%d", &sommet, &temps, &point, &tempsbis);
         graphe->pSommet[i]->tempsExecutionSeconde = temps;
         graphe->pSommet[i]->tempsExecutionCentiSeconde = tempsbis;
+        if(graphe->pSommet[i]->tempsExecutionCentiSeconde < 10){
+            printf("%d pour %d.0%d\n", i+1, graphe->pSommet[i]->tempsExecutionSeconde, graphe->pSommet[i]->tempsExecutionCentiSeconde);
+        }
+        else {
+            printf("%d pour %d.%d\n", i+1, graphe->pSommet[i]->tempsExecutionSeconde, graphe->pSommet[i]->tempsExecutionCentiSeconde);
+        }
     }
     fclose(fptr2);
     for(int i=0; i<graphe->ordre; i++){
@@ -431,17 +434,17 @@ void recherche_connexe(t_Graphe *graphe)
     }
 }
 
+
+
 void tempsDeCycle(t_Graphe*graphe){
     int temps=0;
-    int tempsbis=0;
+    int ordre=0;
     int iteration=0;
     int sommetIt[iteration];
     int tmp[graphe->ordre];
     int station=1;
     int j=0;
-    int it=0;
-    int tempsDeCycle=200;
-    int tempsDeCycleSeconde=2;
+    int tempsDeCycle=2;
     for(int i=0; i<graphe->ordre; i++) {
         if (graphe->pSommet[i]->marquageFauxSommet == 0) {
             i++;
@@ -453,38 +456,614 @@ void tempsDeCycle(t_Graphe*graphe){
         else{
             tmp[i]=100+graphe->pSommet[i]->tempsExecutionCentiSeconde;
         }
+        printf("%d ", tmp[i]);
     }
     printf("\n");
-    for(int i=0; i<graphe->ordre;i++){
-        if (graphe->pSommet[i]->marquageFauxSommet == 0) {
-            i++;
+    while(temps<tempsDeCycle && ordre<graphe->ordre){
+        if (graphe->pSommet[ordre]->marquageFauxSommet == 0) {
+            ordre++;
         }
         if(temps==0){
             printf("station n %d : contient les operations ", station);
         }
-        tempsbis=temps+tmp[graphe->pSommet[i]->sommetOrdre-1-j];
-        if (tempsbis>tempsDeCycle){
-            temps = temps-100;
-            printf("qui prend un temps de %d.%d\n", tempsDeCycleSeconde-1,temps);
-            station++;
-            temps=0;
+        if(graphe->pSommet[graphe->pSommet[ordre]->sommetOrdre]->secondPredecesseur==0 && sommetIt[j]!=graphe->pSommet[ordre]->sommetOrdre){
+            temps=temps+tmp[graphe->pSommet[ordre]->sommetOrdre];
+            printf("%d,",graphe->pSommet[ordre]->sommetOrdre);
+            ordre++;
         }
-        if(graphe->pSommet[graphe->pSommet[i]->sommetOrdre-1]->secondPredecesseur==0 && sommetIt[j]!=graphe->pSommet[i]->sommetOrdre && tempsbis<tempsDeCycle){
-            temps=temps+tmp[graphe->pSommet[i]->sommetOrdre-1];
-            printf("%d,",graphe->pSommet[i]->sommetOrdre);
-        }
-        else if(graphe->pSommet[graphe->pSommet[i]->sommetOrdre-1]->secondPredecesseur!=0 && it==0) {
-            if(temps==0 && it==0){
-                printf("station n %d : contient les operations ", station);
-            }
-            temps=temps+tmp[graphe->pSommet[graphe->pSommet[i]->sommetOrdre-1]->secondPredecesseur-1-j];
-            printf("%d,", graphe->pSommet[graphe->pSommet[i]->sommetOrdre-1]->secondPredecesseur);
-            temps=temps+tmp[graphe->pSommet[i]->sommetOrdre-1];
-            printf("%d,",graphe->pSommet[i]->sommetOrdre);
-            sommetIt[j]=graphe->pSommet[i]->sommetOrdre;
+        else if(graphe->pSommet[graphe->pSommet[ordre]->sommetOrdre]->secondPredecesseur!=0) {
+            temps=temps+tmp[graphe->pSommet[graphe->pSommet[ordre]->sommetOrdre]->secondPredecesseur];
+            printf("%d,", graphe->pSommet[graphe->pSommet[ordre]->sommetOrdre]->secondPredecesseur);
+            ordre++;
+            sommetIt[j]=graphe->pSommet[ordre]->sommetOrdre;
             j++;
-            it=1;
         }
-        tempsbis=0;
+        if ((temps+tmp[graphe->pSommet[graphe->pSommet[ordre]->sommetOrdre]->sommetOrdre])>tempsDeCycle){
+            temps=0;
+            printf("qui prend un temps de %d.%d\n", graphe->pSommet[graphe->pSommet[ordre]->sommetOrdre]->tempsExecutionSeconde, graphe->pSommet[graphe->pSommet[ordre]->sommetOrdre]->tempsExecutionCentiSeconde);
+            station++;
+        }
     }
 }
+
+int FindSommet(struct Sommet operations[100],int val,int nmbOp)
+{
+    int sommetTrouve = -1;
+    for(int i = 0 ; i < nmbOp ; i++)
+    {
+        if(operations[i].valeur == val)
+            sommetTrouve = i;
+    }
+
+    return sommetTrouve;
+}
+
+void addExclusions(struct Sommet *S1 , struct Sommet *S2 )
+{
+    S1->exclusions[S1->nmbE] = S2->valeur;
+    S1->nmbE++;
+
+    S2->exclusions[S2->nmbE] = S1->valeur;
+    S2->nmbE++;
+
+}
+
+void addPrececedent(struct Sommet *S1 , struct Sommet *S2)
+{
+
+    if(S2->premierPredecesseur == 0)
+    {
+        S2->premierPredecesseur = S1->valeur;
+    }
+    else if(S2->secondPredecesseur == 0)
+        S2->secondPredecesseur = S1->valeur;
+    else if(S2->troisPredecesseur == 0)
+        S2->troisPredecesseur = S1->valeur;
+}
+
+int fichierTexte(struct Sommet operations[100])
+{
+
+    int nmbOp = 0;
+
+    FILE* fichier = fopen("operations.txt", "r");
+
+    if (!fichier)
+        fprintf(stderr, "Impossible d'ouvrir operatons.txt");
+
+
+    int sommet;
+    float temps;
+
+    while (fscanf(fichier, "%d %f", &sommet, &temps) != EOF)
+    {
+        int act = FindSommet(operations,sommet,nmbOp);
+        if(act == -1)
+        {
+            operations[nmbOp] = creerSommet(sommet);
+            operations[nmbOp].tempsExecutionSeconde = temps;
+            nmbOp ++;
+        }
+        else
+        {
+            operations[act].tempsExecutionSeconde = temps;
+        }
+    }
+
+
+    fclose(fichier);
+
+    fichier = fopen("exclusions.txt", "r");
+
+    if (!fichier)
+        fprintf(stderr, "Impossible d'ouvrir exclusions.txt");
+
+
+    int sommet1;
+    int sommet2;
+
+    while (fscanf(fichier, "%d %d", &sommet1, &sommet2) != EOF)
+    {
+        int act1 = FindSommet(operations,sommet1,nmbOp);
+        int act2 = FindSommet(operations,sommet2,nmbOp);
+
+
+
+
+
+        if(act1 == -1)
+        {
+            operations[nmbOp] = creerSommet(sommet1);
+            act1 = nmbOp;
+            nmbOp ++;
+            printf("\naddTime: %d",sommet1);
+        }
+        if(act2 == -1)
+        {
+            operations[nmbOp] = creerSommet(sommet2);
+            act2 = nmbOp;
+            nmbOp ++;
+        }
+
+        addExclusions(&operations[act1],&operations[act2]);
+
+    }
+
+
+    fclose(fichier);
+
+    fichier = fopen("precedences.txt", "r");
+
+    if (!fichier)
+        fprintf(stderr, "Impossible d'ouvrir prec.txt");
+
+
+    while (fscanf(fichier, "%d %d", &sommet1, &sommet2) != EOF)
+    {
+        int act1 = FindSommet(operations,sommet1,nmbOp);
+        int act2 = FindSommet(operations,sommet2,nmbOp);
+
+        if(act1 == -1)
+        {
+            operations[nmbOp] = creerSommet(sommet1);
+            act1 = nmbOp;
+            nmbOp ++;
+        }
+        if(act2 == -1)
+        {
+            operations[nmbOp] = creerSommet(sommet2);
+            act2 = nmbOp;
+            nmbOp ++;
+        }
+
+        addPrececedent(&operations[act1],&operations[act2]);
+
+    }
+
+
+    fclose(fichier);
+
+    return nmbOp;
+
+}
+
+void afficheStation(int nmb , struct Station assemblage[15])
+{
+    for(int i = 0 ; i < nmb ; i++)
+    {
+        printf("\n\nStation %d : ",i);
+        for(int j = 0 ; j < assemblage[i].nmbOp ; j++)
+        {
+            printf("Op%d ",assemblage[i].Op[j]);
+        }
+        printf("\ntemps total: %f",assemblage[i].temps);
+    }
+}
+
+float getTempscycle()
+{
+    const char *nomFichier = "temps_cycle.txt";
+    FILE *fichier = fopen(nomFichier, "r");
+
+    if (fichier == NULL)
+    {
+        fprintf(stderr, "Impossible d'ouvrir le fichier %s.\n", nomFichier);
+        exit(EXIT_FAILURE);
+    }
+
+    float nombre;
+    fscanf(fichier, "%f", &nombre);
+
+
+    fclose(fichier);
+    return nombre;
+}
+int isPlaced(int i , struct Sommet operations[100] , int nmb , int placed[100])
+{
+    int sortie = 0;
+
+    int nmb2;
+    nmb2 = 0;
+    int cmp;
+    cmp = 0;
+
+
+
+    int p1 = operations[i].premierPredecesseur;
+    if(p1 != 0)
+    {
+        nmb2++;
+        int k = FindSommet(operations,p1,nmb);
+        if(placed[k] == 1)
+            cmp++;
+    }
+
+    int p2 = operations[i].secondPredecesseur;
+    if(p2 != 0)
+    {
+        nmb2++;
+        int k = FindSommet(operations,p2,nmb);
+        if(placed[k] == 1)
+            cmp++;
+    }
+
+    int p3 = operations[i].troisPredecesseur;
+    if(p3 != 0)
+    {
+        nmb2++;
+        int k = FindSommet(operations,p3,nmb);
+        if(placed[k] == 1)
+            cmp++;
+    }
+
+
+
+    if(nmb2 == cmp )
+        return 1;
+    else
+        return 0;
+
+
+}
+
+
+void CreerStation(struct Sommet operations[100] , int nmb, int contraintes , int order[100] , float tempsC)
+{
+
+    struct Station assemblage[15];
+    for(int i = 0 ;  i < 15  ; i++)
+    {
+        assemblage[i].temps = 0;
+        assemblage[i].nmbOp = 0;
+    }
+
+    int placed[100];
+    for(int i = 0 ; i < 100 ; i++)
+        placed[i] = 0;
+    int nmbStation = 0;
+    int cmp = 0;
+
+
+    while(cmp < nmb)
+    {
+        for(int i = 0 ; i < nmb ; i++)
+        {
+            int act = i;
+            if(contraintes == 2)
+                act = order[i];
+
+            if(placed[act] == 0)
+            {
+                int good = 1;
+                if(contraintes == 1 || contraintes == 3 || contraintes == 4  || contraintes == 5)
+                {
+                    if(assemblage[nmbStation].nmbOp > 0)
+                    {
+                        int t = FindSommet(operations,assemblage[nmbStation].Op[0],nmb);
+                        if(operations[t].couleur != operations[act].couleur)
+                        {
+                            good = 0;
+                        }
+                    }
+                }
+                if(contraintes == 2  || contraintes == 4  || contraintes == 5)
+                {
+                    if(isPlaced(act,operations,nmb,placed) == 0)
+                        good = 0;
+                }
+
+                if(contraintes == 2  || contraintes == 3 || contraintes == 5)
+                {
+                    if(assemblage[nmbStation].temps + operations[act].tempsExecutionSeconde > tempsC)
+                        good = 0;
+                }
+
+                if(good == 1)
+                {
+                    assemblage[nmbStation].Op[assemblage[nmbStation].nmbOp] = operations[act].valeur;
+                    assemblage[nmbStation].temps += operations[act].tempsExecutionSeconde;
+                    assemblage[nmbStation].nmbOp++;
+                    cmp++;
+                    placed[act] = 1;
+
+                }
+            }
+        }
+        nmbStation++;
+    }
+
+    afficheStation(nmbStation,assemblage);
+
+}
+
+void Algo2(struct Sommet operations[100] , int nmb, float tempsC)
+{
+    int order[100];
+
+    for(int i = 0 ; i < nmb ; i++)
+        order[i] = 0;
+
+    int placed[100];
+
+    for(int i = 0 ; i < 100 ; i++)
+        placed[i] = 0;
+
+    int cmp = 0;
+
+
+    while( cmp != nmb)
+    {
+        for(int i = 0 ; i < nmb ; i++)
+        {
+            if(placed[i] == 0)
+            {
+                //printf("\ncmp: %d",cmp);
+
+                int c = isPlaced(i,operations,nmb,placed);
+                if(c == 1 )
+                {
+                    placed[i] = 1;
+                    order[cmp] = i;
+                    cmp++;
+                }
+            }
+        }
+    }
+
+    CreerStation(operations,nmb,2,order,tempsC);
+}
+
+void Algo3(struct Sommet operations[100] , int nmb,float tempsC)
+{
+    int cmp = 0;
+    int couleur = 1;
+    int order[100];
+
+    for(int i = 0 ; i< nmb ; i++)
+        operations[i].couleur = 0;
+
+    while(cmp != nmb)
+    {
+        for(int i = 0 ; i < nmb ; i++)
+        {
+            if(operations[i].couleur == 0 )
+            {
+                int memeCouleur = 0;
+
+                for(int j = 0 ; j < operations[i].nmbE ; j++)
+                {
+                    int t = FindSommet(operations,operations[i].exclusions[j],nmb);
+                    if(operations[t].couleur == couleur)
+                        memeCouleur = 10;
+                }
+                if(memeCouleur == 0)
+                {
+                    operations[i].couleur = couleur;
+                    cmp++;
+                }
+            }
+        }
+        couleur = couleur +1;
+    }
+
+
+    CreerStation(operations,nmb,3,order,tempsC);
+
+}
+
+
+void Algo4(struct Sommet operations[100] , int nmb,float tempsC)
+{
+    int cmp = 0;
+    int couleur = 1;
+    int order[100];
+
+    for(int i = 0 ; i< nmb ; i++)
+        operations[i].couleur = 0;
+
+    while(cmp != nmb)
+    {
+        for(int i = 0 ; i < nmb ; i++)
+        {
+            if(operations[i].couleur == 0 )
+            {
+                int memeCouleur = 0;
+
+                for(int j = 0 ; j < operations[i].nmbE ; j++)
+                {
+                    int t = FindSommet(operations,operations[i].exclusions[j],nmb);
+                    if(operations[t].couleur == couleur)
+                        memeCouleur = 10;
+                }
+                if(memeCouleur == 0)
+                {
+                    operations[i].couleur = couleur;
+                    cmp++;
+                }
+            }
+        }
+        couleur = couleur +1;
+    }
+
+    for(int i = 0 ; i < nmb ; i++)
+        order[i] = 0;
+
+    int placed[100];
+
+    for(int i = 0 ; i < 100 ; i++)
+        placed[i] = 0;
+
+    cmp = 0;
+
+
+    while( cmp != nmb)
+    {
+        for(int i = 0 ; i < nmb ; i++)
+        {
+            if(placed[i] == 0)
+            {
+                //printf("\ncmp: %d",cmp);
+
+                int c = isPlaced(i,operations,nmb,placed);
+                if(c == 1 )
+                {
+                    placed[i] = 1;
+                    order[cmp] = i;
+                    cmp++;
+                }
+            }
+        }
+    }
+
+
+    CreerStation(operations,nmb,4,order,tempsC);
+
+}
+
+void Algo5(struct Sommet operations[100] , int nmb,float tempsC)
+{
+    int cmp = 0;
+    int couleur = 1;
+    int order[100];
+
+    for(int i = 0 ; i< nmb ; i++)
+        operations[i].couleur = 0;
+
+    while(cmp != nmb)
+    {
+        for(int i = 0 ; i < nmb ; i++)
+        {
+            if(operations[i].couleur == 0 )
+            {
+                int memeCouleur = 0;
+
+                for(int j = 0 ; j < operations[i].nmbE ; j++)
+                {
+                    int t = FindSommet(operations,operations[i].exclusions[j],nmb);
+                    if(operations[t].couleur == couleur)
+                        memeCouleur = 10;
+                }
+                if(memeCouleur == 0)
+                {
+                    operations[i].couleur = couleur;
+                    cmp++;
+                }
+            }
+        }
+        couleur = couleur +1;
+    }
+
+    for(int i = 0 ; i < nmb ; i++)
+        order[i] = 0;
+
+    int placed[100];
+
+    for(int i = 0 ; i < 100 ; i++)
+        placed[i] = 0;
+
+    cmp = 0;
+
+
+    while( cmp != nmb)
+    {
+        for(int i = 0 ; i < nmb ; i++)
+        {
+            if(placed[i] == 0)
+            {
+                //printf("\ncmp: %d",cmp);
+
+                int c = isPlaced(i,operations,nmb,placed);
+                if(c == 1 )
+                {
+                    placed[i] = 1;
+                    order[cmp] = i;
+                    cmp++;
+                }
+            }
+        }
+    }
+
+
+    CreerStation(operations,nmb,5,order,tempsC);
+
+}
+
+void calculeDesStations(struct Sommet operations[100] , int nmb ,float tmpC)
+{
+    printf("\n\n1-Algo 1 ( exclusions )\n2-Algo 2 ( temps et precedences ) \n3-Algo ( temps et exclusions ) 3\n4-Algo ( precedences et exclusions ) 4\n5-Algo 5 ( precedences exclusions et temps)\n");
+    int choix ;
+    scanf("%d",&choix);
+
+    if(choix == 1)
+    {
+        //Algo1(operations , nmb);
+    }
+
+    if(choix == 2)
+    {
+        Algo2(operations,nmb,tmpC);
+    }
+
+    if(choix == 3)
+    {
+        Algo3(operations,nmb,tmpC);
+    }
+
+    if(choix == 4)
+    {
+        Algo4(operations,nmb,tmpC);
+    }
+
+    if(choix == 5)
+    {
+        Algo5(operations,nmb,tmpC);
+    }
+}
+
+void data(struct Sommet operations[100] , int nmb)
+{
+    printf("\n\n1-Exclusions\n2-Precedences\n3-Temps\n");
+    int choix ;
+    scanf("%d",&choix);
+
+    if(choix == 1)
+    {
+        for(int i = 0 ; i < nmb ; i++)
+        {
+            printf("\nOperation n%d  exclu : ",operations[i].valeur);
+            for(int j = 0 ; j < operations[i].nmbE ; j++)
+            {
+                printf("[%d] ",operations[i].exclusions[j]);
+            }
+        }
+    }
+    if(choix == 2)
+    {
+        for(int i = 0 ; i < nmb ; i++)
+        {
+            printf("\nOperation n%d  exclu : ",operations[i].valeur);
+
+            if(operations[i].premierPredecesseur != 0)
+            {
+                printf("[%d] ",operations[i].premierPredecesseur);
+            }
+            if(operations[i].secondPredecesseur != 0)
+                printf("[%d] ",operations[i].secondPredecesseur);
+            if(operations[i].troisPredecesseur != 0)
+                printf("[%d] ",operations[i].troisPredecesseur);
+
+
+
+        }
+    }
+    if(choix == 3)
+    {
+        for(int i = 0 ; i < nmb ; i++)
+        {
+            printf("\nOperation n%d  temps : %.2f sec ",operations[i].valeur,operations[i].tempsExecutionSeconde);
+        }
+    }
+}
+
+
+
