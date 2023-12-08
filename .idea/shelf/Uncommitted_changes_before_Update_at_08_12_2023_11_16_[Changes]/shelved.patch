@@ -1,0 +1,20 @@
+Index: main.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>//\n// Created by Cheikh Ahmadou Bamba Mbacké Fall on 26/11/2023.\n//\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main.c b/main.c
+--- a/main.c	(revision 6a721413166ef91bbf30da436adb4fe3fc2b259b)
++++ b/main.c	(date 1701036123491)
+@@ -1,3 +1,9 @@
+ //
+ // Created by Cheikh Ahmadou Bamba Mbacké Fall on 26/11/2023.
+ //
++#include "stdio.h"
++int main()
++{
++    printf("hello");
++    return 0;
++}
