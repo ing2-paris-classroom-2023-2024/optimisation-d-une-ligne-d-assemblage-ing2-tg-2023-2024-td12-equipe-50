@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/tmp/optimisation-d-une-ligne-d-assemblage-ing2-tg-2023-2024-td12-equipe-50/Graphe.h
+stdio.h
+-
+stdlib.h
+-
+
+/tmp/optimisation-d-une-ligne-d-assemblage-ing2-tg-2023-2024-td12-equipe-50/main.c
+Graphe.h
+/tmp/optimisation-d-une-ligne-d-assemblage-ing2-tg-2023-2024-td12-equipe-50/Graphe.h
+
